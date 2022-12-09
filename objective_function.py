@@ -1,6 +1,15 @@
+"""NACO assignment 22/23.
+
+By Björn Keyser, Jimmy Oei, and Zoë Breed
+
+## Installing requirements
+    pip install ioh>=0.3.3
+"""
+
 import typing
 import shutil
 import random
+import numpy as np
 
 import ioh
 
@@ -9,14 +18,40 @@ from implementation import GeneticAlgorithm
 
 class CellularAutomata:
     """Skeleton CA, you should implement this."""
+    
 
     def __init__(self, rule_number: int):
         """Intialize the cellular automaton with a given rule number"""
+        self.cell = []
+        self.cells = []
+        # gives the set of rules
+        self.ruleset = [int(x) for x in np.binary_repr(rule_number, width=8)]
 
     def __call__(self, c0: typing.List[int], t: int) -> typing.List[int]:
         """Evaluate for T timesteps. Return Ct for a given C0."""
 
+    def setup(cells, cell):
+        newcells = [cells.lenght]
+        for i in cells:
+            left = cell[i-1]
+            middle = cell[i]
+            right = cell[i+1]
+            newstate = rules(left, middle, right, rule)
+            newcells[i] = newstate
+            return
+    
+    def rules(a, b, c, ruleset):
+        if   a == 1 and b == 1 and c == 1: return ruleset[0]
+        elif a == 1 and b == 1 and c == 0: return ruleset[1]
+        elif a == 1 and b == 0 and c == 1: return ruleset[2]
+        elif a == 1 and b == 0 and c == 0: return ruleset[3]
+        elif a == 0 and b == 1 and c == 1: return ruleset[4]
+        elif a == 0 and b == 1 and c == 0: return ruleset[5]
+        elif a == 0 and b == 0 and c == 1: return ruleset[6]
+        elif a == 0 and b == 0 and c == 0: return ruleset[7]
+        return 0
 
+  
 def make_objective_function(ct, rule, t, similarity_method):
     '''Create a CA objective function.'''
     

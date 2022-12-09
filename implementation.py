@@ -47,7 +47,7 @@ class GeneticAlgorithm:
             the GA or one of the (to be implemented) operators, such as a mutation rate.
         """
     
-        self.state = 2
+        self.upbound = 2
 
         self.budget = budget
         self.pop_size = 1000
@@ -80,7 +80,7 @@ class GeneticAlgorithm:
         print("optimum:",(problem.optimum), problem.optimum.y)
 
         # initialize
-        pop = self.initialize_population(self.state, n=problem.meta_data.n_variables)
+        pop = self.initialize_population(self.upbound, n=problem.meta_data.n_variables)
 
         # first evaluation
         fit = self.calculate_fitness(pop, problem)
@@ -104,7 +104,7 @@ class GeneticAlgorithm:
         print(f"curr best: {problem.state.current_best}")
         return problem.state.current_best
 
-    def initialize_population(self, state, n):
+    def initialize_population(self, upbound, n):
         """Generates a randomly initialized population
 
         Parameters
@@ -121,8 +121,8 @@ class GeneticAlgorithm:
 
         pop = []
         for _ in range(self.pop_size):
-            pop.append(np.random.randint(0, state, n))
-
+            pop.append(np.random.randint(0, upbound, n))
+            
         return pop
 
  
@@ -157,7 +157,7 @@ class GeneticAlgorithm:
 
             # mutation
             if np.random.rand() < self.mutation_rate:
-                child = self.mutation(child, self.state)
+                child = self.mutation(child, self.upbound)
             new_pop.append(child)
 
         return new_pop
@@ -311,7 +311,7 @@ class GeneticAlgorithm:
     """
 
     @staticmethod
-    def mutation_point(gene, state):
+    def mutation_point(gene, upbound):
         """ Mutation: point mutation
 
         Notes
@@ -321,11 +321,11 @@ class GeneticAlgorithm:
         n = len(gene)
         j = random.randint(0, n - 1)
         # kan dus ook zelfde blijven...
-        gene[j] = np.random.randint(0, state)
+        gene[j] = np.random.randint(0, upbound)
         return gene
 
     @staticmethod
-    def mutation_swap(gene, state):
+    def mutation_swap(gene, upbound):
         """ Mutation: swap mutation
 
         Notes
