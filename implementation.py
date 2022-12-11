@@ -14,6 +14,8 @@ import shutil
 import ioh
 import numpy as np
 
+from objective_function import CellularAutomata
+
 class GeneticAlgorithm:
     """An implementation of the Genetic Algorithm."""
 
@@ -182,7 +184,7 @@ class GeneticAlgorithm:
         """
         fit = []
         for gene in pop:
-            fitness = problem(gene)
+            fitness = make_objective_function
             fit.append(fitness)
 
         return fit
@@ -322,6 +324,8 @@ class GeneticAlgorithm:
         j = random.randint(0, n - 1)
         # kan dus ook zelfde blijven...
         gene[j] = np.random.randint(0, upbound)
+
+        
         return gene
 
     @staticmethod
