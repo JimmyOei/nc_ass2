@@ -14,8 +14,6 @@ import shutil
 import ioh
 import numpy as np
 
-from objective_function import CellularAutomata
-
 class GeneticAlgorithm:
     """An implementation of the Genetic Algorithm."""
 
@@ -50,7 +48,7 @@ class GeneticAlgorithm:
         """
     
         self.upbound = 2
-
+       
         self.budget = budget
         self.pop_size = 1000
 
@@ -184,7 +182,7 @@ class GeneticAlgorithm:
         """
         fit = []
         for gene in pop:
-            fitness = make_objective_function
+            fitness = problem(gene)
             fit.append(fitness)
 
         return fit

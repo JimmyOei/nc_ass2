@@ -10,7 +10,14 @@
 		{"dimension": 10,
 		"path": "data_f26_objective_function_ca_1/IOHprofiler_f26_DIM10.dat",
 		"runs": [
-			{"instance": 1, "evals": 248, "best": {"evals": 1, "y": 1, "x": [0, 0, 0, 1, 0, 1, 1, 1, 1, 0]}}
+			{"instance": 1, "evals": 1000, "best": {"evals": 1, "y": 0.05, "x": [1, 0, 0, 1, 0, 1, 0, 0, 1, 1]}},
+			{"instance": 1, "evals": 1000, "best": {"evals": 1, "y": 0.05, "x": [1, 0, 1, 0, 0, 0, 1, 0, 1, 1]}},
+			{"instance": 1, "evals": 1000, "best": {"evals": 1, "y": 0.05, "x": [1, 0, 1, 1, 1, 0, 0, 1, 1, 0]}},
+			{"instance": 1, "evals": 1000, "best": {"evals": 1, "y": 0.05, "x": [1, 0, 0, 0, 1, 1, 1, 1, 1, 0]}},
+			{"instance": 1, "evals": 1000, "best": {"evals": 1, "y": 0.05, "x": [1, 0, 0, 0, 1, 0, 1, 1, 0, 0]}},
+			{"instance": 1, "evals": 1000, "best": {"evals": 1, "y": 0.05, "x": [0, 1, 1, 1, 0, 0, 1, 1, 0, 1]}},
+			{"instance": 1, "evals": 1000, "best": {"evals": 1, "y": 0.05, "x": [1, 1, 0, 0, 1, 1, 1, 0, 1, 0]}},
+			{"instance": 1, "evals": 656, "best": {"evals": 1, "y": 0.05, "x": [0, 1, 0, 0, 0, 0, 0, 1, 1, 0]}}
 		]}
 	]
 }

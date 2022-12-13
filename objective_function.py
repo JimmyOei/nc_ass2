@@ -10,7 +10,6 @@ import typing
 import shutil
 import random
 import numpy as np
-# import difflib
 import ioh
 
 from implementation import GeneticAlgorithm
@@ -23,7 +22,8 @@ class CellularAutomata:
         """Intialize the cellular automaton with a given rule number"""
         # test cell
         self.cells = [1] * 20
-
+        # self.cells = GeneticAlgorithm
+        
         # upbound: 2 = binary and upbound: 3 = ternary
         self.upbound = 2
 
@@ -72,10 +72,11 @@ class CellularAutomata:
     
     # Looks up a new state from the rule set
     def get_rule(self, a, b, c):
-        # convert neighborhood into decimal 
+        # convert neighborhood binary into decimal 
         if self.upbound == 2:
             s = str(a) + str(b) + str(c)
             index = int(s, self.upbound)
+        # adds up the values of the cell
         else:
             index = a + b + c
         
@@ -141,8 +142,8 @@ def example(nreps=10):
     for inputting in the analyzer."""
 
     # ct, rule, t = None, None, None  # Given by the sup. material
-    # testing 
     
+    # testing 
     ct = [1] * 20
     rule = 30
     t = 3
@@ -154,7 +155,7 @@ def example(nreps=10):
     problem = ioh.wrap_problem(
         objective_function,
         name="objective_function_ca_1", # Give an informative name 
-        dimension=10, # Should be the size of ct
+        dimension=10, # Should be the size of ct (er stond 10 maar moet dus 60 zijn?)
         problem_type="Integer",
         optimization_type=ioh.OptimizationType.MAX,
         lb=0,
