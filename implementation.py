@@ -17,7 +17,7 @@ import numpy as np
 class GeneticAlgorithm:
     """An implementation of the Genetic Algorithm."""
 
-    def __init__(self, budget: int) -> None:
+    def __init__(self, budget: int, upbound: int) -> None:
         """Construct a new GA object.
 
         Parameters
@@ -47,7 +47,7 @@ class GeneticAlgorithm:
             the GA or one of the (to be implemented) operators, such as a mutation rate.
         """
     
-        self.upbound = 2
+        self.upbound = upbound
        
         self.budget = budget
         self.pop_size = 1000
@@ -55,7 +55,7 @@ class GeneticAlgorithm:
         self.mutation_rate = 0.4
         self.cross_rate = 0.7
         self.tournament_size = 128
-
+    
        
         # Variables containing the modal operator the GA will use
         self.mating_selection = self.mat_selection_tournament
@@ -98,10 +98,12 @@ class GeneticAlgorithm:
                 gen = gen + 1
 
                 # Termination criterion
+               
                 if problem.state.current_best.y == problem.optimum.y:
                     break
 
         print(f"curr best: {problem.state.current_best}")
+        #print(f"curr best problem call: {problem(problem.state.current_best)}")
         return problem.state.current_best
 
     def initialize_population(self, upbound, n):
