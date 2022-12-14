@@ -77,8 +77,8 @@ class GeneticAlgorithm:
         *   This is the main body of the GA.
         """
 
-        print("optimum:",(problem.optimum), problem.optimum.y)
-
+        # print("optimum:",(problem.optimum), problem.optimum.y)
+        
         # initialize
         pop = self.initialize_population(self.upbound, n=problem.meta_data.n_variables)
 
@@ -185,6 +185,7 @@ class GeneticAlgorithm:
         fit = []
         for gene in pop:
             fitness = problem(gene)
+            # fitness = 
             fit.append(fitness)
 
         return fit

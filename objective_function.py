@@ -21,26 +21,27 @@ class CellularAutomata:
     
     def __init__(self, rule_number: int, upbound: int):
         """Intialize the cellular automaton with a given rule number"""       
-        # upbound: 2 = binary and upbound: 3 = ternary
+        # upbound: 2 = binary & upbound: 3 = ternary
         self.upbound = upbound
 
         #gives the set of rules
         if self.upbound == 2:
+            # convert rule to binary 8 bit 
             self.ruleset = [int(x) for x in np.binary_repr(rule_number, width=8)]
         else: 
+            # convert rule to ternary 27 bit 
             self.ruleset = [int(x) for x in np.base_repr(rule_number, base=3)]
-            while len(self.ruleset) != 27:
+            while len(self.ruleset) <= 26:
                 self.ruleset.append(0)
-
+        
         self.ruleset.reverse()
-
+        
     def __call__(self, c0: typing.List[int], t: int) -> typing.List[int]:
         """Evaluate for T timesteps. Return Ct for a given C0."""
         for _ in range(t):
             c0 = self.compute_state(c0)
 
         # print("t complete: ", t)
-
         return c0
 
     # Compute the next state
@@ -60,7 +61,6 @@ class CellularAutomata:
             # print(i, middle, newstate, " - ", left, right)
             cn[i] = newstate
             i += 1
-
         return cn
     
     # Looks up a new state from the rule set
@@ -78,22 +78,24 @@ def make_objective_function(ct, rule, t, upbound, similarity_method):
     if similarity_method == 1:
         def similarity(ct: typing.List[int], ct_prime: typing.List[int]) -> float:
             """Count number of similar items"""
-
             count = 0
             for i in range(len(ct)):
                 if(ct[i] == ct_prime[i]):
                     count += 1
-                
-            #print("Count:", count)
-            return count
+        
+            return count/len(ct)
     else:
         def similarity(ct: typing.List[int], ct_prime: typing.List[int]) -> float:
             """You should implement this"""
-
-            return random.normalvariate(0, 10)
+            sum1, sum2 = 0, 0
+            for i in range(len(ct)):
+                sum1 += ct[i]
+                sum2 += ct_prime[i]
+                
+            return -abs(sum1 - sum2)
             
     # individual is GA = c0_prime
-    # calculates similarity between c0_prime and c0 of the CA
+   
     def objective_function(c0_prime: typing.List[int]) -> float:
         """Skeleton objective function. 
         
@@ -125,7 +127,7 @@ def example(nreps=10):
     for inputting in the analyzer."""
 
     # which state you want to use nr between 1 - 10
-    nr = 6
+    nr = 9
     line = 0
     with open ('ca_input.csv', newline = '', encoding='utf-8-sig') as csvfile:
         csv_reader = csv.reader(csvfile)
@@ -138,17 +140,18 @@ def example(nreps=10):
             line += 1
             
     # Create an objective function
-    objective_function = make_objective_function(ct, rule, t, upbound, 1)
+    objective_function = make_objective_function(ct, rule, t, upbound, 2)
     
     # Wrap objective_function as an ioh problem
     problem = ioh.wrap_problem(
         objective_function,
         name="objective_function_ca_1", # Give an informative name 
-        dimension=60, # Should be the size of ct (er stond 10 maar moet dus 60 zijn?)
+        dimension=60, # Should be the size of ct 
         problem_type="Integer",
+        instance = 8,
         optimization_type=ioh.OptimizationType.MAX,
         lb=0,
-        ub=1,         # 1 for 2d, 2 for 3d
+        ub= (upbound - 1),         # 1 for 2d, 2 for 3d
     )
 
     # Attach a logger to the problem
@@ -159,10 +162,11 @@ def example(nreps=10):
     for _ in range(nreps):
         algorithm = GeneticAlgorithm(100, upbound)
         algorithm(problem)
-
+        
         ca = CellularAutomata(rule, upbound)
         ct_prime = ca(problem.state.current_best.x, t)
         print("current_best ct_prime: ", ct_prime)
+        print("CT!", ct)
         print("fit: ", objective_function(problem.state.current_best.x))
         problem.reset()
 
