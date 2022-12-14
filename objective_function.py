@@ -61,8 +61,7 @@ class CellularAutomata:
             left = c0[i - 1]
             middle = c0[i]
             right = c0[i + 1]
-            newstate = self.get_rule(left, middle, right)
-            cn[i] = newstate
+            cn[i] = self.get_rule(left, middle, right)
             i += 1
         return cn
 
@@ -70,7 +69,7 @@ class CellularAutomata:
     def get_rule(self, a, b, c):
         """Gives the cell of the rule with the given neighbourhood (a, b, c)."""
         s = str(a) + str(b) + str(c)
-        index = int(s, self.upbound) # converts to index given base (upbound)
+        index = int(s, self.upbound)  # converts to index given base (upbound)
 
         return self.ruleset[index]
 
@@ -80,24 +79,21 @@ def make_objective_function(ct, rule, t, upbound, similarity_method):
 
     if similarity_method == 1:
         def similarity(ct: typing.List[int], ct_prime: typing.List[int]) -> float:
-            """Count number of similar items"""
             count = 0
             for i in range(len(ct)):
                 if ct[i] == ct_prime[i]:
                     count += 1
 
-            return count / len(ct)
+            return count / len(ct_prime)
     else:
         def similarity(ct: typing.List[int], ct_prime: typing.List[int]) -> float:
-            """You should implement this"""
-            sum1, sum2 = 0, 0
+            count = 0
             for i in range(len(ct)):
-                sum1 += ct[i]
-                sum2 += ct_prime[i]
+                if ct[i] == ct_prime[i]:
+                    count += 1
 
-            return -abs(sum1 - sum2)
+            return (count / sum(ct_prime)) * (count / sum(ct))
 
-    # individual is GA = c0_prime
 
     def objective_function(c0_prime: typing.List[int]) -> float:
         """Skeleton objective function. 
