@@ -8,7 +8,6 @@ By Björn Keyser, Jimmy Oei, and Zoë Breed
 
 import typing
 import shutil
-import random
 import numpy as np
 import ioh
 import csv
@@ -17,73 +16,77 @@ from implementation import GeneticAlgorithm
 
 
 class CellularAutomata:
-    """Skeleton CA, you should implement this."""
-    
     def __init__(self, rule_number: int, upbound: int):
-        """Intialize the cellular automaton with a given rule number"""       
-        # upbound: 2 = binary & upbound: 3 = ternary
+        """Intialize the cellular automaton with a given rule number
+
+        Parameters
+        ----------
+        rule_number: int
+            The integer representing the ruleset
+
+        upbound: int
+            The base of the ruleset. 2 = binary, 3 = ternary
+        """
         self.upbound = upbound
 
-        #gives the set of rules
+        # gives the set of rules
         if self.upbound == 2:
             # convert rule to binary 8 bit 
             self.ruleset = [int(x) for x in np.binary_repr(rule_number, width=8)]
-        else: 
+        else:
             # convert rule to ternary 27 bit 
             self.ruleset = [int(x) for x in np.base_repr(rule_number, base=3)]
             while len(self.ruleset) <= 26:
                 self.ruleset.append(0)
-        
+
         self.ruleset.reverse()
-        
+
     def __call__(self, c0: typing.List[int], t: int) -> typing.List[int]:
         """Evaluate for T timesteps. Return Ct for a given C0."""
         for _ in range(t):
             c0 = self.compute_state(c0)
 
-        # print("t complete: ", t)
         return c0
 
-    # Compute the next state
     def compute_state(self, c0: typing.List[int]):
+        """Computes the next state of C0 with the given ruleset."""
         cn = list(c0)
 
         # accounts for borders
         cn[0] = self.get_rule(0, c0[0], c0[1])
         cn[-1] = self.get_rule(c0[-2], c0[-1], 0)
-        
+
         i = 1
         while i <= len(c0[1:-1]):
-            left = c0[i-1]
+            left = c0[i - 1]
             middle = c0[i]
-            right = c0[i+1]
+            right = c0[i + 1]
             newstate = self.get_rule(left, middle, right)
-            # print(i, middle, newstate, " - ", left, right)
             cn[i] = newstate
             i += 1
         return cn
-    
+
     # Looks up a new state from the rule set
     def get_rule(self, a, b, c):
-        # convert neighborhood binary into decimal 
+        """Gives the cell of the rule with the given neighbourhood (a, b, c)."""
         s = str(a) + str(b) + str(c)
-        index = int(s, self.upbound)
-        
-        # use that value as the index into the ruleset array
-        return self.ruleset[index]   
-  
+        index = int(s, self.upbound) # converts to index given base (upbound)
+
+        return self.ruleset[index]
+
+
 def make_objective_function(ct, rule, t, upbound, similarity_method):
     '''Create a CA objective function.'''
-    
+
     if similarity_method == 1:
         def similarity(ct: typing.List[int], ct_prime: typing.List[int]) -> float:
             """Count number of similar items"""
             count = 0
             for i in range(len(ct)):
-                if(ct[i] == ct_prime[i]):
+                if ct[i] == ct_prime[i]:
                     count += 1
-        
-            return count/len(ct)
+
+            return count / len(ct)
     else:
         def similarity(ct: typing.List[int], ct_prime: typing.List[int]) -> float:
             """You should implement this"""
@@ -91,11 +94,11 @@ def make_objective_function(ct, rule, t, upbound, similarity_method):
             for i in range(len(ct)):
                 sum1 += ct[i]
                 sum2 += ct_prime[i]
-                
+
             return -abs(sum1 - sum2)
-            
+
     # individual is GA = c0_prime
-   
+
     def objective_function(c0_prime: typing.List[int]) -> float:
         """Skeleton objective function. 
         
@@ -117,19 +120,19 @@ def make_objective_function(ct, rule, t, upbound, similarity_method):
         ca = CellularAutomata(rule, upbound)
         ct_prime = ca(c0_prime, t)
 
-        # print("ct_prime:", ct_prime)
         return similarity(ct, ct_prime)
 
     return objective_function
+
 
 def example(nreps=10):
     """An example of wrapping a objective function in ioh and collecting data
     for inputting in the analyzer."""
 
-    # which state you want to use nr between 1 - 10
+    # which problem you want to use nr between 1 - 10
     nr = 9
     line = 0
-    with open ('ca_input.csv', newline = '', encoding='utf-8-sig') as csvfile:
+    with open('ca_input.csv', newline='', encoding='utf-8-sig') as csvfile:
         csv_reader = csv.reader(csvfile)
         for row in csv_reader:
             if line == nr:
@@ -138,31 +141,31 @@ def example(nreps=10):
                 t = int(row[2])
                 ct = eval(row[3])
             line += 1
-            
+
     # Create an objective function
     objective_function = make_objective_function(ct, rule, t, upbound, 2)
-    
+
     # Wrap objective_function as an ioh problem
     problem = ioh.wrap_problem(
         objective_function,
-        name="objective_function_ca_1", # Give an informative name 
-        dimension=60, # Should be the size of ct 
+        name="objective_function_ca_1",  # Give an informative name
+        dimension=60,  # Should be the size of ct
         problem_type="Integer",
-        instance = 8,
+        instance=8,
         optimization_type=ioh.OptimizationType.MAX,
         lb=0,
-        ub= (upbound - 1),         # 1 for 2d, 2 for 3d
+        ub=(upbound - 1),  # 1 for 2d, 2 for 3d
     )
 
     # Attach a logger to the problem
     logger = ioh.logger.Analyzer()
     problem.attach_logger(logger)
 
-    # run your algoritm on the problem
+    # run your algorithm on the problem
     for _ in range(nreps):
         algorithm = GeneticAlgorithm(100, upbound)
         algorithm(problem)
-        
+
         ca = CellularAutomata(rule, upbound)
         ct_prime = ca(problem.state.current_best.x, t)
         print("current_best ct_prime: ", ct_prime)
