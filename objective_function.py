@@ -94,7 +94,6 @@ def make_objective_function(ct, rule, t, upbound, similarity_method):
 
             return (count / sum(ct_prime)) * (count / sum(ct))
 
-
     def objective_function(c0_prime: typing.List[int]) -> float:
         """Skeleton objective function. 
         
@@ -126,7 +125,7 @@ def example(nreps=10):
     for inputting in the analyzer."""
 
     # which problem you want to use nr between 1 - 10
-    nr = 9
+    nr = 10
     line = 0
     with open('ca_input.csv', newline='', encoding='utf-8-sig') as csvfile:
         csv_reader = csv.reader(csvfile)
@@ -139,12 +138,12 @@ def example(nreps=10):
             line += 1
 
     # Create an objective function
-    objective_function = make_objective_function(ct, rule, t, upbound, 2)
+    objective_function = make_objective_function(ct, rule, t, upbound, 1)
 
     # Wrap objective_function as an ioh problem
     problem = ioh.wrap_problem(
         objective_function,
-        name="objective_function_ca_1",  # Give an informative name
+        name="exp_1_problem_10.1",  # Give an informative name
         dimension=60,  # Should be the size of ct
         problem_type="Integer",
         instance=8,
@@ -157,16 +156,18 @@ def example(nreps=10):
     logger = ioh.logger.Analyzer()
     problem.attach_logger(logger)
 
+    budget = int(60 * 5e1)
+
     # run your algorithm on the problem
     for _ in range(nreps):
-        algorithm = GeneticAlgorithm(100, upbound)
+        algorithm = GeneticAlgorithm(budget, upbound)
         algorithm(problem)
 
         ca = CellularAutomata(rule, upbound)
         ct_prime = ca(problem.state.current_best.x, t)
         print("current_best ct_prime: ", ct_prime)
         print("CT!", ct)
-        print("fit: ", objective_function(problem.state.current_best.x))
+        # print("fit: ", objective_function(problem.state.current_best.x))
         problem.reset()
 
     logger.close()
@@ -177,3 +178,75 @@ def example(nreps=10):
 
 if __name__ == "__main__":
     example()
+
+# def tried_to_make_a_suite(nreps=10):
+#     """An example of wrapping a objective function in ioh and collecting data
+#     for inputting in the analyzer."""
+#
+#     # which problem you want to use nr between 1 - 10
+#     nrs = range(1, 11)
+#     line = 0
+#     # similarity function to use 1 or 2
+#     similarity = 1
+#     #dimension
+#     with open('ca_input.csv', newline='', encoding='utf-8-sig') as csvfile:
+#         csv_reader = csv.reader(csvfile)
+#         for row in csv_reader:
+#             if line in nrs:
+#                 upbound = int(row[0])
+#                 rule = int(row[1])
+#                 t = int(row[2])
+#                 ct = eval(row[3])
+#
+#                 inst = line
+#                 if line > 5:
+#                     inst -= - 5
+#
+#                 # Create an objective function
+#                 objective_function = make_objective_function(ct, rule, t, upbound, similarity)
+#
+#                 # Wrap objective_function as an ioh problem
+#                 problem = ioh.wrap_problem(
+#                     objective_function,
+#                     name=(str(upbound) + "_state_ca_problem"),  # Give an informative name
+#                     dimension=60,  # Should be the size of ct
+#                     problem_type="Integer",
+#                     instance=inst,
+#                     optimization_type=ioh.OptimizationType.MAX,
+#                     lb=0,
+#                     ub=(upbound - 1),  # 1 for 2d, 2 for 3d
+#                 )
+#
+#                 print("problem id: ", problem.problems)
+#
+#             line += 1
+#
+#     print("te")
+#     budget = int(60 * 5e2)
+#     suite = ioh.suite.PBO([26, 27], list(range(1, 5)), [60])
+#     # Attach a logger to the problem
+#     #print("suite: ", suite.problem_ids, suite.name, suite.instances, suite.problems)
+#
+#     logger = ioh.logger.Analyzer(algorithm_name="test")
+#     suite.attach_logger(logger)
+#
+#
+#     # run your algorithm on the problem
+#     for problem in suite:
+#         print("Solving: ", problem)
+#
+#         for _ in range(nreps):
+#             ga = GeneticAlgorithm(budget, upbound)
+#             ga(problem)
+#
+#             ca = CellularAutomata(rule, upbound)
+#             ct_prime = ca(problem.state.current_best.x, t)
+#             print("current_best ct_prime: ", ct_prime)
+#             print("CT!", ct)
+#             print("fit: ", objective_function(problem.state.current_best.x))
+#             problem.reset()
+#
+#     logger.close()
+#
+#     shutil.make_archive("ioh_data", "zip", "ioh_data")
+#     shutil.rmtree("ioh_data")
