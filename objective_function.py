@@ -143,7 +143,7 @@ def example(nreps=10):
     # Wrap objective_function as an ioh problem
     problem = ioh.wrap_problem(
         objective_function,
-        name="exp_1_problem_10.1",  # Give an informative name
+        name="exp_1_problem_10.2",  # Give an informative name
         dimension=60,  # Should be the size of ct
         problem_type="Integer",
         instance=8,

@@ -59,7 +59,7 @@ class GeneticAlgorithm:
        
         # Variables containing the modal operator the GA will use
         self.mating_selection = self.mat_selection_tournament
-        self.crossover = self.crossover_single_point
+        self.crossover = self.crossover_uniform
         self.mutation = self.mutation_point
         self.environmental_selection = self.env_selection_best_of_both
 
