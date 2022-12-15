@@ -92,7 +92,7 @@ def make_objective_function(ct, rule, t, upbound, similarity_method):
                 if ct[i] == ct_prime[i]:
                     count += 1
 
-            return (count / sum(ct_prime)) * (count / sum(ct))
+            return (count / (sum(ct_prime) + 1)) * (count / (sum(ct) + 1))
 
     def objective_function(c0_prime: typing.List[int]) -> float:
         """Skeleton objective function. 
@@ -138,12 +138,12 @@ def example(nreps=10):
             line += 1
 
     # Create an objective function
-    objective_function = make_objective_function(ct, rule, t, upbound, 1)
+    objective_function = make_objective_function(ct, rule, t, upbound, 2)
 
     # Wrap objective_function as an ioh problem
     problem = ioh.wrap_problem(
         objective_function,
-        name="exp_1_problem_10.2",  # Give an informative name
+        name="exp_3_problem_10.2",  # Give an informative name
         dimension=60,  # Should be the size of ct
         problem_type="Integer",
         instance=8,
